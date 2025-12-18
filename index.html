@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full overflow-hidden">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lynn | Bangboo AI Strategist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=JetBrains+Mono:wght@700&display=swap');
+
+        :root {
+            --perspective: 2000px;
+            --transition-speed: 850ms;
+            --easing: cubic-bezier(0.16, 1, 0.3, 1);
+            
+            /* Bangboo Official Palette */
+            --b-white: #f9fafb;
+            --b-zinc: #18181b;
+            --b-yellow: #facc15;
+            --aspect-ratio: 1.5;
+        }
+
+        body {
+            background: #050505;
+            color: var(--b-zinc);
+            perspective: var(--perspective);
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            user-select: none;
+            touch-action: none; 
+        }
+
+        /* --- Scene & Navigation Zones --- */
+        .scene {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        @media (min-width: 1024px) {
+            .nav-zone {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                width: 15vw;
+                z-index: 1000;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.4s var(--easing);
+            }
+            .nav-zone:hover { background: rgba(250, 204, 21, 0.04); }
+            .nav-left { left: 0; }
+            .nav-right { right: 0; }
+            .nav-hint {
+                color: var(--b-yellow);
+                font-size: 4rem;
+                font-weight: 100;
+                opacity: 0;
+                transition: transform 0.4s var(--easing), opacity 0.3s ease;
+            }
+            .nav-left:hover .nav-hint { opacity: 0.7; transform: translateX(-10px); }
+            .nav-right:hover .nav-hint { opacity: 0.7; transform: translateX(10px); }
+        }
+
+        /* --- 3D Prism Architecture --- */
+        .prism {
+            position: relative;
+            width: 75vw;
+            max-width: 360px;
+            height: calc(75vw * var(--aspect-ratio));
+            max-height: 540px;
+            transform-style: preserve-3d;
+            transition: transform var(--transition-speed) var(--easing);
+            will-change: transform;
+        }
+
+        @media (min-width: 768px) {
+            .prism {
+                width: 38vw;
+                height: calc(38vw * var(--aspect-ratio));
+            }
+        }
+
+        .prism-face {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            border: 4px solid var(--b-zinc);
+            background: var(--b-white);
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.7);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .prism-face { padding: 2.25rem; border-radius: 16px; border-width: 5px; }
+        }
+
+        .face-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transform: translateZ(1px);
+            backface-visibility: hidden;
+        }
+
+        /* --- Bangboo Details --- */
+        .serial-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--b-zinc);
+            opacity: 0.4;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.25rem;
+        }
+
+        .hazard-footer {
+            background: repeating-linear-gradient(
+                -45deg,
+                var(--b-yellow),
+                var(--b-yellow) 10px,
+                var(--b-zinc) 10px,
+                var(--b-zinc) 20px
+            );
+            height: 12px;
+            width: calc(100% + 4rem);
+            margin-left: -2rem;
+            margin-top: auto;
+            border-top: 2px solid var(--b-zinc);
+        }
+
+        .bolt {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #d1d5db;
+            border: 1px solid #9ca3af;
+            border-radius: 50%;
+        }
+
+        .face-title {
+            color: var(--b-zinc);
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            line-height: 0.85;
+            text-transform: uppercase;
+        }
+
+        .scroll-area {
+            overflow-y: auto;
+            scrollbar-width: none;
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
+        .scroll-area::-webkit-scrollbar { display: none; }
+
+        .service-item {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 0.5rem 0;
+            border-bottom: 1.5px dashed rgba(0,0,0,0.1);
+            display: block;
+        }
+
+        .tag-badge {
+            font-size: 10px;
+            font-weight: 900;
+            background: var(--b-zinc);
+            color: var(--b-yellow);
+            padding: 2px 8px;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+            clip-path: polygon(0 0, 100% 0, 92% 100%, 0% 100%);
+        }
+
+        .cta-link {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.65rem 0.5rem;
+            border-bottom: 2px solid var(--b-zinc);
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* --- HUD indicators --- */
+        .hud-indicators {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .eye-dot {
+            width: 8px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.4s var(--easing);
+            border-radius: 10px;
+        }
+
+        .eye-dot.active {
+            background: var(--b-yellow);
+            height: 28px;
+            transform: translateY(-6px);
+            box-shadow: 0 0 15px var(--b-yellow);
+            border: 2px solid var(--b-zinc);
+        }
+
+        @media (min-width: 768px) {
+            .hud-indicators { gap: 0.8rem; bottom: 3rem; }
+            .eye-dot { width: 10px; height: 22px; }
+            .eye-dot.active { height: 36px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <!-- Desktop Nav Hits -->
+        <div id="nav-prev" class="nav-zone nav-left hidden lg:flex"><span class="nav-hint">‹</span></div>
+        <div id="nav-next" class="nav-zone nav-right hidden lg:flex"><span class="nav-hint">›</span></div>
+
+        <div id="prism" class="prism" role="tablist">
+            <div id="face-0" class="prism-face" role="tab" aria-selected="true"></div>
+            <div id="face-1" class="prism-face" role="tab" aria-selected="false"></div>
+            <div id="face-2" class="prism-face" role="tab" aria-selected="false"></div>
+            <div id="face-3" class="prism-face" role="tab" aria-selected="false"></div>
+        </div>
+    </div>
+
+    <!-- HUD Indicators -->
+    <div class="hud-indicators" id="indicator">
+        <div class="eye-dot active"></div><div class="eye-dot"></div><div class="eye-dot"></div>
+        <div class="eye-dot"></div><div class="eye-dot"></div><div class="eye-dot"></div>
+        <div class="eye-dot"></div><div class="eye-dot"></div><div class="eye-dot"></div>
+    </div>
+
+    <script>
+        const PAGES = [
+            {
+                id: "B-01",
+                content: `
+                    <span class="serial-num">BANG-UNIT // LOG 01</span>
+                    <div class="flex justify-start mb-2"><span class="tag-badge">AI ACTIVE</span></div>
+                    <h1 class="text-5xl md:text-7xl face-title mb-4">LYNN.</h1>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-yellow-400/10 border-l-4 border-yellow-400">
+                            <p class="text-xs font-black uppercase opacity-60 mb-1">Core Logic</p>
+                            <p class="text-sm md:text-lg font-black italic leading-tight">High performance content. Profitable AI enhancement.</p>
+                        </div>
+                        <div class="bg-zinc-900 text-yellow-400 p-3 border-2 border-black rounded-sm">
+                            <p class="text-[9px] font-bold uppercase opacity-60 mb-1">Standard Rate</p>
+                            <p class="text-3xl font-black tracking-tighter text-white font-mono">$5 — $555</p>
+                        </div>
+                    </div>
+                    <div class="hazard-footer"></div>
+                `
+            },
+            {
+                id: "B-02",
+                content: `
+                    <span class="serial-num">MODULE: GEN // ARCH 02</span>
+                    <h2 class="text-4xl md:text-5xl face-title mb-4 mt-2">AI CORE</h2>
+                    <div class="scroll-area flex-grow">
+                        <div class="space-y-0">
+                            <span class="service-item">AI-Prompt Engineering</span>
+                            <span class="service-item">AI-Assisted Blog Posts</span>
+                            <span class="service-item">Social Content Packs</span>
+                            <span class="service-item">Micro-Research & TL;DR</span>
+                            <span class="service-item">AI Chatbot Setup</span>
+                            <span class="service-item">Prompt-to-Image Packs</span>
+                        </div>
+                    </div>
+                    <div class="hazard-footer"></div>
+                `
+            },
+            {
+                id: "B-03",
+                content: `
+                    <span class="serial-num">MODULE: STRAT // ARCH 03</span>
+                    <h2 class="text-4xl md:text-5xl face-title mb-4 mt-2">CONTENT</h2>
+                    <div class="scroll-area flex-grow">
+                        <div class="space-y-0">
+                            <span class="service-item">Landing Page Copy</span>
+                            <span class="service-item">Headline & Hook Posts</span>
+                            <span class="service-item">Style Edit & Proofing</span>
+                            <span class="service-item">YouTube Video Scripts</span>
+                            <span class="service-item">YT to Blog Repurpose</span>
+                            <span class="service-item">SEO Article Writing</span>
+                        </div>
+                    </div>
+                    <div class="hazard-footer"></div>
+                `
+            },
+            {
+                id: "B-04",
+                content: `
+                    <span class="serial-num">MODULE: COMM // ARCH 04</span>
+                    <h2 class="text-4xl md:text-5xl face-title mb-4 mt-2">ECOMM</h2>
+                    <div class="scroll-area flex-grow">
+                        <div class="space-y-0">
+                            <span class="service-item">Product Descriptions</span>
+                            <span class="service-item">SEO Title + Meta Pack</span>
+                            <span class="service-item">Conversion Assets</span>
+                            <span class="service-item">Resume & LinkedIn</span>
+                            <span class="service-item">Social Media Captions</span>
+                            <span class="service-item">Quick UX Copy Audits</span>
+                        </div>
+                    </div>
+                    <div class="hazard-footer"></div>
+                `
+            },
+            {
+                id: "B-05",
+                content: `
+                    <span class="serial-num">MODULE: VIZ // ARCH 05</span>
+                    <h2 class="text-4xl md:text-5xl face-title mb-4 mt-2">VISUALS</h2>
+                    <div class="scroll-area flex-grow">
+                        <div class="space-y-0">
+                            <span class="service-item">Precision Extraction</span>
+                            <span class="service-item">Image Retouching</span>
+                            <span class="service-item">High-End Post-Prod</span>
+                            <span class="service-item">Product Mastering</span>
+                            <span class="service-item">Photoreal Enhancement</span>
+                            <span class="service-item">Lighting & Texture</span>
+                        </div>
+                    </div>
+                    <div class="hazard-footer"></div>
+                `
+            },
+            {
+                id: "B-06",
+                content: `
+                    <span class="serial-num">MODULE: ID // ARCH 06</span>
+                    <h2 class="text-4xl md:text-5xl face-title mb-4 mt-2">DESIGN</h2>
+                    <div class="scroll-area flex-grow">
+                        <div class="space-y-0">
+                            <span class="service-item">Logo Design Services</span>
+                            <span class="service-item">Virtual Brand Integration</span>
+                            <span class="service-item">Asset Visualization</span>
+                            <span class="service-item">Photo Realistic ID</span>
+                            <span class="service-item">Bespoke Illustration</span>
+                            <span class="service-item">Seamless Implement</span>
+                        </div>
+                    </div>
+                    <div class="hazard-footer"></div>
+                `
+            },
+            {
+                id: "B-07",
+                content: `
+                    <span class="serial-num">MODULE: STUD // ARCH 07</span>
+                    <h2 class="text-4xl md:text-5xl face-title mb-4 mt-2">MOCKUPS</h2>
+                    <div class="scroll-area flex-grow">
+                        <div class="space-y-0">
+                            <span class="service-item">Brand-in-Motion</span>
+                            <span class="service-item">Real Wear Service</span>
+                            <span class="service-item">True-to-life Renders</span>
+                            <span class="service-item">Studio-Grade Appeal</span>
+                            <span class="service-item">Retail-Ready Visuals</span>
+                            <span class="service-item">High-Fidelity Preview</span>
+                        </div>
+                    </div>
+                    <div class="hazard-footer"></div>
+                `
+            },
+            {
+                id: "B-08",
+                content: `
+                    <span class="serial-num">MODULE: AUTH // ARCH 08</span>
+                    <h2 class="text-4xl md:text-5xl face-title mb-3 mt-2">VERIFIED</h2>
+                    <div class="scroll-area flex-grow pr-1">
+                        <div class="space-y-0">
+                            <div class="text-[10px] font-black uppercase p-2 mb-1 bg-black/5 border-l-4 border-yellow-500">Gen AI Career — Coursera</div>
+                            <div class="text-[10px] font-black uppercase p-2 mb-1 bg-black/5 border-l-4 border-yellow-500">Web3 & Solidity — Packt</div>
+                            <div class="text-[10px] font-black uppercase p-2 mb-1 bg-black/5 border-l-4 border-yellow-500">AI Security — Google Cloud</div>
+                            <div class="text-[10px] font-black uppercase p-2 mb-1 bg-black/5 border-l-4 border-yellow-500">Copyright Law — UPenn</div>
+                        </div>
+                    </div>
+                    <div class="hazard-footer"></div>
+                `
+            },
+            {
+                id: "B-09",
+                content: `
+                    <span class="serial-num">MODULE: LINK // ARCH 09</span>
+                    <h2 class="text-4xl md:text-5xl face-title mb-6 mt-2">CONNECT</h2>
+                    <div class="flex-grow space-y-1">
+                        <a href="https://www.linkedin.com/in/kaung-khant-lynn-baa01b383" target="_blank" class="cta-link">LinkedIn <span>→</span></a>
+                        <a href="https://t.me/iamlynn2003" target="_blank" class="cta-link">Telegram <span>→</span></a>
+                        <div class="mt-4 flex gap-2">
+                            <div class="bg-zinc-900 text-white p-2 text-[10px] font-black flex-grow text-center">CRYPTO</div>
+                            <div class="bg-yellow-400 border-2 border-black p-2 text-[10px] font-black flex-grow text-center">ESCROW</div>
+                        </div>
+                    </div>
+                    <div class="hazard-footer"></div>
+                `
+            }
+        ];
+
+        class MagicPrismController {
+            constructor() {
+                this.prism = document.getElementById('prism');
+                this.faces = Array.from(this.prism.querySelectorAll('.prism-face'));
+                this.dots = Array.from(document.getElementById('indicator').querySelectorAll('.eye-dot'));
+                this.logicalIndex = 0;
+                this.physicalIndex = 0;
+                this.isAnimating = false;
+                this.scrollAccumulator = 0;
+                this.threshold = window.innerWidth < 768 ? 40 : 60;
+                
+                // Auto-rotation config: Optimized to 3s cycle and 9s resume delay
+                this.autoRotateDelay = 3000; 
+                this.resumeDelay = 9000;    
+                this.autoRotateInterval = null;
+                this.inactivityTimeout = null;
+
+                this.init();
+            }
+
+            init() {
+                this.calculateGeometry();
+                this.populateInitial();
+                this.setupEvents();
+                this.startAutoRotation();
+
+                window.addEventListener('resize', () => {
+                    this.threshold = window.innerWidth < 768 ? 40 : 60;
+                    this.calculateGeometry();
+                });
+            }
+
+            calculateGeometry() {
+                const width = this.prism.offsetWidth;
+                const apothem = width / 2;
+                const epsilon = 1.5;
+                this.faces.forEach((face, i) => {
+                    const angle = i * 90;
+                    face.style.transform = `rotateY(${angle}deg) translateZ(${apothem + epsilon}px)`;
+                });
+                this.render();
+            }
+
+            populateInitial() {
+                this.faces.forEach((face, i) => this.updateFace(i, i));
+            }
+
+            updateFace(physIdx, logicIdx) {
+                const page = PAGES[((logicIdx % 9) + 9) % 9];
+                this.faces[physIdx].innerHTML = `
+                    <div class="bolt top-2 left-2"></div><div class="bolt top-2 right-2"></div>
+                    <div class="bolt bottom-2 left-2"></div><div class="bolt bottom-2 right-2"></div>
+                    <div class="face-content">${page.content}</div>
+                `;
+            }
+
+            rotate(direction) {
+                if (this.isAnimating) return;
+                this.isAnimating = true;
+
+                this.logicalIndex = ((this.logicalIndex + direction % 9) + 9) % 9;
+                this.physicalIndex += direction;
+
+                const targetPhysIdx = ((this.physicalIndex % 4) + 4) % 4;
+                this.updateFace(targetPhysIdx, this.logicalIndex);
+
+                this.render();
+
+                setTimeout(() => {
+                    this.isAnimating = false;
+                }, 850);
+            }
+
+            render() {
+                const angle = this.physicalIndex * -90;
+                this.prism.style.transform = `rotateY(${angle}deg)`;
+                this.dots.forEach((dot, i) => dot.classList.toggle('active', i === this.logicalIndex));
+            }
+
+            /* --- Auto-Rotation Engine --- */
+            startAutoRotation() {
+                this.stopAutoRotation();
+                this.autoRotateInterval = setInterval(() => {
+                    if (!this.isAnimating) this.rotate(1);
+                }, this.autoRotateDelay);
+            }
+
+            stopAutoRotation() {
+                if (this.autoRotateInterval) clearInterval(this.autoRotateInterval);
+                if (this.inactivityTimeout) clearTimeout(this.inactivityTimeout);
+            }
+
+            resetAutoRotation() {
+                this.stopAutoRotation();
+                this.inactivityTimeout = setTimeout(() => {
+                    this.startAutoRotation();
+                }, this.resumeDelay);
+            }
+
+            setupEvents() {
+                // Scroll Interaction
+                window.addEventListener('wheel', e => {
+                    this.resetAutoRotation(); 
+                    if (this.isAnimating) return;
+                    let delta = e.deltaY;
+                    if (e.deltaMode === 1) delta *= 40;
+                    this.scrollAccumulator += delta;
+                    if (Math.abs(this.scrollAccumulator) >= this.threshold) {
+                        this.rotate(this.scrollAccumulator > 0 ? 1 : -1);
+                        this.scrollAccumulator = 0;
+                    }
+                }, { passive: true });
+
+                // Touch Interaction
+                let touchStart = 0;
+                window.addEventListener('touchstart', e => {
+                    this.resetAutoRotation();
+                    touchStart = e.touches[0].clientX;
+                }, { passive: true });
+
+                window.addEventListener('touchmove', e => {
+                    this.resetAutoRotation();
+                    if (this.isAnimating) return;
+                    const delta = touchStart - e.touches[0].clientX;
+                    if (Math.abs(delta) > this.threshold) {
+                        this.rotate(delta > 0 ? 1 : -1);
+                        touchStart = e.touches[0].clientX;
+                    }
+                }, { passive: true });
+
+                // UI Interaction
+                const prevBtn = document.getElementById('nav-prev');
+                const nextBtn = document.getElementById('nav-next');
+                if(prevBtn) prevBtn.addEventListener('click', () => { this.rotate(-1); this.resetAutoRotation(); });
+                if(nextBtn) nextBtn.addEventListener('click', () => { this.rotate(1); this.resetAutoRotation(); });
+
+                window.addEventListener('keydown', e => {
+                    this.resetAutoRotation();
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') this.rotate(1);
+                    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') this.rotate(-1);
+                });
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => new MagicPrismController());
+    </script>
+</body>
+</html>
